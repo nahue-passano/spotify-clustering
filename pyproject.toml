@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "spotify-clustering"
+version = "0.1.0"
+description = ""
+authors = ["nahue-passano <passano43632@estudiantes.untref.edu.ar>"]
+readme = "README.md"
+packages = [{include = "spotify_clustering"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.9.7 || >3.9.7,<3.13"
+streamlit = "^1.25.0"
+plotly = "^5.16.0"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+pylint = "^2.17.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
