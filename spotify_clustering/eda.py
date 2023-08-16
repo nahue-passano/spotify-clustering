@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 import numpy as np
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 
 from spotify_clustering.utils import load_csv
 
@@ -40,33 +42,41 @@ print("-" * 50)
 print(spotify_stats)
 
 print("-" * 50)
-import plotly.graph_objs as go
-from plotly.subplots import make_subplots
+
 
 spotify_numerical = spotify_df.select_dtypes(include=np.number)
 
-# Crear una figura de subplots
-fig = make_subplots(rows=4, cols=4, subplot_titles=spotify_numerical.columns)
 
-# Iterar a través de las columnas numéricas y agregar histogramas a la figura
-for i, column_i in enumerate(spotify_numerical.columns):
-    row = i // 4 + 1
-    col = i % 4 + 1
-    print(row, col)
-    trace = go.Histogram(
-        x=spotify_numerical[column_i],
-        name=column_i,
+def make_histogram_from_dataframe(dataframe: pd.DataFrame) -> go.Figure:
+    # Crear una figura de subplots
+    fig = make_subplots(
+        rows=4,
+        cols=4,
+        subplot_titles=dataframe.columns,
+        vertical_spacing=0.1,
+        horizontal_spacing=0.1,
     )
-    fig.add_trace(trace, row=row, col=col)
+
+    # Iterar a través de las columnas numéricas y agregar histogramas a la figura
+    for i, column_i in enumerate(dataframe.columns):
+        row = i // 4 + 1
+        col = i % 4 + 1
+        trace = go.Histogram(
+            x=dataframe[column_i],
+            name=f"<b>{column_i}</b>",
+        )
+        fig.add_trace(trace, row=row, col=col)
+        fig.update_xaxes(title_text="Value", row=row, col=col)
+        fig.update_yaxes(title_text="Frequency", row=row, col=col)
+
+    # Actualizar el diseño de la figura para agregar etiquetas y título
+    fig.update_layout(
+        showlegend=False, margin={"l": 0, "r": 0, "t": 30, "b": 0}, height=800
+    )
+
+    return fig
 
 
-# Actualizar el diseño de la figura para agregar etiquetas y título
-fig.update_layout(
-    title="Histogramas de Columnas Numéricas",
-    xaxis=dict(title="Valor"),
-    yaxis=dict(title="Frecuencia"),
-    showlegend=False,
-)
-
-# Mostrar la figura
-fig.show()
+if __name__ == "__main__":
+    fig = make_histogram_from_dataframe(spotify_numerical)
+    fig.show()
