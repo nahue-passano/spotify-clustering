@@ -4,16 +4,16 @@ import pandas as pd
 
 
 def load_csv(csv_path: Path) -> pd.DataFrame:
-    """_summary_
+    """Reads the csv data and return it as a dataframe
 
     Parameters
     ----------
     csv_path : Path
-        _description_
+        Path to the csv
 
     Returns
     -------
     pd.DataFrame
-        _description_
+        Csv data in dataframe object
     """
     return pd.read_csv(csv_path, sep=",")
