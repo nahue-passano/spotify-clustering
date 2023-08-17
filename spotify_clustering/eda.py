@@ -1,54 +1,46 @@
-from pathlib import Path
+import re
+from typing import List
 
 import pandas as pd
 import numpy as np
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 
-from spotify_clustering.utils import load_csv
 
-CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
+def dataframe_stats(dataframe: pd.DataFrame, stats: List[str]) -> pd.DataFrame:
+    """Generates statistical metrics for a given dataframe. Also more stats metrics can
+    be added with "stats" variable
 
-spotify_df = load_csv(CSV_PATH)
+    Parameters
+    ----------
+    dataframe : pd.DataFrame
+        DataFrame to be analyzed
+    stats : List[str]
+        List of strings where each element must be allowed by pd.DatFrame.agg() method
 
-# Vista previa
-print("Vista previa del dataset")
-print(spotify_df.head())
-
-# Features
-features = list(spotify_df.columns)
-print("-" * 50)
-print(f"El dataset tiene {len(features)} features, los cuales son: {features}")
-
-numerical_features = spotify_df.select_dtypes(include=np.number).columns.tolist()
-print("-" * 50)
-print(
-    f"De las {len(features)} features, {len(numerical_features)} son del tipo numéricas ({numerical_features})"
-)
-
-# Data cleaning check
-print("-" * 50)
-print(f"Chequeo si hace falta imputar data: {spotify_df.isnull().values.any()}")
-
-
-# Stats description
-def dataframe_stats(dataframe, stats):
+    Returns
+    -------
+    pd.DataFrame
+        Statistical description of the dataframe
+    """
     df_stats = dataframe.describe(include=[np.number])
     return pd.concat([df_stats, dataframe.select_dtypes(include=np.number).agg(stats)])
 
 
-spotify_stats = dataframe_stats(spotify_df, ["kurt", "skew"])
-print("-" * 50)
-print(spotify_stats)
-
-print("-" * 50)
-
-
-spotify_numerical = spotify_df.select_dtypes(include=np.number)
-
-
 def make_histogram_from_dataframe(dataframe: pd.DataFrame) -> go.Figure:
-    # Crear una figura de subplots
+    """Generates a plotly figure with the histogram of each numerical feature.
+
+    Parameters
+    ----------
+    dataframe : pd.DataFrame
+        Numerical dataframe containing the data
+
+    Returns
+    -------
+    go.Figure
+        Hisogram of each dataframe feature.
+    """
+    # Init plotly figure
     fig = make_subplots(
         rows=4,
         cols=4,
@@ -57,19 +49,19 @@ def make_histogram_from_dataframe(dataframe: pd.DataFrame) -> go.Figure:
         horizontal_spacing=0.1,
     )
 
-    # Iterar a través de las columnas numéricas y agregar histogramas a la figura
     for i, column_i in enumerate(dataframe.columns):
+        # Position of each trace in figure
         row = i // 4 + 1
         col = i % 4 + 1
-        trace = go.Histogram(
-            x=dataframe[column_i],
-            name=f"<b>{column_i}</b>",
-        )
+
+        trace = go.Histogram(x=dataframe[column_i], name=f"<b>{column_i}</b>")
         fig.add_trace(trace, row=row, col=col)
+
+        # Update axes labels
         fig.update_xaxes(title_text="Value", row=row, col=col)
         fig.update_yaxes(title_text="Frequency", row=row, col=col)
 
-    # Actualizar el diseño de la figura para agregar etiquetas y título
+    # Layout settings
     fig.update_layout(
         showlegend=False, margin={"l": 0, "r": 0, "t": 30, "b": 0}, height=800
     )
@@ -77,6 +69,58 @@ def make_histogram_from_dataframe(dataframe: pd.DataFrame) -> go.Figure:
     return fig
 
 
-if __name__ == "__main__":
-    fig = make_histogram_from_dataframe(spotify_numerical)
-    fig.show()
+def get_genres_from_dataframe(spotify_df: pd.DataFrame) -> List[str]:
+    """Returns the unique genres of a given spotify dataframe
+
+    Parameters
+    ----------
+    spotify_df : pd.DataFrame
+        Spotify data in a Dataframe
+
+    Returns
+    -------
+    List[str]
+        List of strings containing unique values of genres
+    """
+    genres = [genre_i for genre_i in spotify_df["artist_genres"]]
+    all_genres = _flatten_genre_list(genres)
+    return _get_unique_genres(all_genres)
+
+
+def _flatten_genre_list(genre_list: List[List[str]]) -> List[str]:
+    """Flattens a given list of string list contaning artist genres into a single list.
+
+    Parameters
+    ----------
+    genre_list : List[str]
+        Genre list of list of string
+
+    Returns
+    -------
+    List[str]
+        Single list with all artist genres
+    """
+    flattened_genres = []
+
+    for genre_str in genre_list:
+        genres = re.findall(r"'([^']*)'", genre_str)
+        genres = [genre.strip() for genre in genres if genre.strip() and genre != "[]"]
+        flattened_genres.extend(genres)
+
+    return flattened_genres
+
+
+def _get_unique_genres(genre_list: List[str]) -> List[str]:
+    """Returns a list of unique genres in the given genre_list
+
+    Parameters
+    ----------
+    genre_list : List[str]
+        List of genres
+
+    Returns
+    -------
+    List[str]
+        Unique genres in the given list.
+    """
+    return list(set(genre_list))
