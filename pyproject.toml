@@ -10,6 +10,7 @@ packages = [{include = "spotify_clustering"}]
 python = ">=3.9,<3.9.7 || >3.9.7,<3.13"
 streamlit = "^1.25.0"
 plotly = "^5.16.0"
+scikit-learn = "^1.3.0"
 
 
 [tool.poetry.group.dev.dependencies]

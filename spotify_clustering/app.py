@@ -6,6 +6,9 @@ import numpy as np
 from spotify_clustering import utils
 from spotify_clustering import eda
 
+# TODO: agregar ploteo de la matriz de correlación
+# TODO: Agregar gráfico temporal de como cambian los parámetros en función del tiempo
+
 CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
 
 st.set_page_config(layout="wide")
@@ -18,6 +21,12 @@ intro_tab, eda_tab, clustering_tab = st.tabs(
 
 with intro_tab:
     st.header("Introduction")
+    
+    st.write("Tech stack used for the challenge:")
+    st.write("* Pandas for data manipulation")
+    st.write("* Plotly for data visualization")
+    st.write("* Scikit-learng for dimensionality reduction algorithms and clustering techniques")
+    st.write("* Streamlit for the front-end app")
 
 with eda_tab:
     st.header("🔎🗃️ Exploratory Data Analysis")
@@ -37,7 +46,7 @@ with eda_tab:
     no_genre_artists = spotify_df[spotify_df["artist_genres"] == "['[]']"][
         "artist"
     ].unique()
-    most_followed_artists = spotify_df[spotify_df["artist_followers"] > 1_000_000][
+    most_followed_artists = spotify_df[spotify_df["artist_followers"] > 10_000_000][
         "artist"
     ]
     most_followed_artists_pct = round(
@@ -54,7 +63,7 @@ with eda_tab:
         f"* There are {len(artists)} different artists in the dataset, where {len(no_genre_artists)} have no assigned musical gender"
     )
     st.write(
-        f"* The {most_followed_artists_pct}% of the artists has more than 1 million followers"
+        f"* The {most_followed_artists_pct}% of the artists has more than 10 million followers"
     )
     st.write(f"* The most used key is {most_used_key}, which corresponds to A")
 
