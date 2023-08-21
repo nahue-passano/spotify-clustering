@@ -4,7 +4,6 @@ import pandas as pd
 from umap import UMAP
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from spotify_clustering import utils
 
 
 class DimensionalityReductionTechnique(ABC):

@@ -5,11 +5,14 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from spotify_clustering import utils
-from spotify_clustering import eda
-from spotify_clustering import visualization
-from spotify_clustering.dimensionality_reduction import PCATechnique, UMAPTechnique
-from spotify_clustering.clustering import KMeansAlgorithm, DBSCANAlgorithm
+from spotify_clustering.engine import utils
+from spotify_clustering.engine import eda
+from spotify_clustering.engine import visualization
+from spotify_clustering.engine.dimensionality_reduction import (
+    PCATechnique,
+    UMAPTechnique,
+)
+from spotify_clustering.engine.clustering import KMeansAlgorithm, DBSCANAlgorithm
 
 # TODO: agregar ploteo de la matriz de correlación
 # TODO: Agregar gráfico temporal de como cambian los parámetros en función del tiempo
