@@ -1,0 +1,4 @@
+umap:
+  n_neighbors : 5
+  min_dist : 0.05
+  random_state : 42
