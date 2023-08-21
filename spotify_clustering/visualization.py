@@ -92,7 +92,8 @@ def make_scatter3d_from_dataframe(
             axis=-1,
         ),
         hovertemplate="<b>Artist:</b> %{customdata[0]} <br>"
-        + "<b>Genres:</b> %{customdata[1]} <extra></extra>",
+        + "<b>Genres:</b> %{customdata[1]} <br>"
+        + "<b>Cluster:</b> %{customdata[2]} <extra></extra>",
         showlegend=False,
     )
 
@@ -108,6 +109,7 @@ def make_scatter3d_from_dataframe(
                     "marker.color": [dataframe[feature_i]],
                     "marker.colorscale": "portland",
                     "marker.colorbar.title": feature_i,
+                    "name": feature_i,
                 }
             ],
         )
