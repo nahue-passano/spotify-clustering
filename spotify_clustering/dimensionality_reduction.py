@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from pathlib import Path
 
-import numpy as np
 import pandas as pd
 from umap import UMAP
 from sklearn.decomposition import PCA
@@ -47,14 +45,14 @@ class PCATechnique(DimensionalityReductionTechnique):
         data_pca_df = pd.DataFrame(
             data=data_pca, columns=[f"PCA{i+1}" for i in range(target_dimension)]
         )
-        return pd.concat([data, data_pca_df], axis=1)
+        return data_pca_df
 
 
 class UMAPTechnique(DimensionalityReductionTechnique):
-    def __init__(self):
-        self.n_neighbors = 5
-        self.min_dist = 0.0
-        self.random_state = 42
+    def __init__(self, n_neighbors, min_dist, random_state):
+        self.n_neighbors = n_neighbors
+        self.min_dist = min_dist
+        self.random_state = random_state
 
     def reduce_dimensionality(
         self, data: pd.DataFrame, target_dimension: int
@@ -79,41 +77,9 @@ class UMAPTechnique(DimensionalityReductionTechnique):
             min_dist=self.min_dist,
             random_state=self.random_state,
         )
-        data_pca = umap.fit_transform(data)
-        data_pca_df = pd.DataFrame(
-            data=data_pca[:, :3],
+        data_umap = umap.fit_transform(data)
+        data_umap_df = pd.DataFrame(
+            data=data_umap[:, :3],
             columns=[f"UMAP{i+1}" for i in range(target_dimension)],
         )
-        return pd.concat([data, data_pca_df], axis=1)
-
-
-if __name__ == "__main__":
-    import plotly.express as px
-
-    CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
-    TECHNIQUE = "UMAP"
-
-    spotify_df = utils.load_csv(CSV_PATH)
-    spotify_numerical = spotify_df.select_dtypes(include=np.number)
-
-    if TECHNIQUE == "PCA":
-        dim_reductor = PCATechnique()
-        axes = "PCA"
-    if TECHNIQUE == "UMAP":
-        dim_reductor = UMAPTechnique()
-        axes = "UMAP"
-
-    preprocessed_spotify = dim_reductor.preprocess(spotify_numerical)
-    spotify_dim_reducted = dim_reductor.reduce_dimensionality(preprocessed_spotify, 3)
-
-    from spotify_clustering import visualization
-
-    fig = visualization.make_scatter3d_from_dataframe(
-        spotify_dim_reducted,
-        x_axes=f"{axes}1",
-        y_axes=f"{axes}2",
-        z_axes=f"{axes}3",
-        hoverdata=spotify_df[["artist", "artist_genres"]],
-    )
-
-    fig.show()
+        return data_umap_df
