@@ -14,17 +14,17 @@ class ClusteringAlgorithm(ABC):
 
     def compute(self, data: pd.DataFrame):
         self.set_algorithm()
-        self.algorithm.fit(data)
+        self.algorithm.fit_predict(data)
         labels_df = pd.DataFrame({"cluster_labels": self.algorithm.labels_})
         return pd.concat([data, labels_df], axis=1)
 
 
 class KMeansAlgorithm(ClusteringAlgorithm):
-    def __init__(self, n_clusters: int):
+    def __init__(self, n_clusters: int, max_iter: int, n_init: int, random_state: int):
         self.n_clusters = n_clusters
-        self.max_iter = 500
-        self.n_init = 50
-        self.random_state = 42
+        self.max_iter = max_iter
+        self.n_init = n_init
+        self.random_state = random_state
 
     def set_algorithm(self):
         algorithm = KMeans(
@@ -37,50 +37,10 @@ class KMeansAlgorithm(ClusteringAlgorithm):
 
 
 class DBSCANAlgorithm(ClusteringAlgorithm):
-    def __init__(self):
-        self.eps = 0.3
-        self.min_samples = 5
+    def __init__(self, eps, min_samples):
+        self.eps = eps
+        self.min_samples = min_samples
 
     def set_algorithm(self):
         algorithm = DBSCAN(eps=self.eps, min_samples=self.min_samples)
         super().__init__(algorithm)
-
-
-if __name__ == "__main__":
-    from spotify_clustering import utils
-    from pathlib import Path
-    from spotify_clustering.dimensionality_reduction import PCATechnique, UMAPTechnique
-    from spotify_clustering import visualization
-    import numpy as np
-
-    CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
-    TECHNIQUE = "UMAP"
-    CLUSTERING_ALGORITHM = "DBSCAN"
-
-    spotify_df = utils.load_csv(CSV_PATH)
-    spotify_numerical = spotify_df.select_dtypes(include=np.number)
-
-    if TECHNIQUE == "PCA":
-        dim_reductor = PCATechnique()
-        axes = "PCA"
-    if TECHNIQUE == "UMAP":
-        dim_reductor = UMAPTechnique()
-        axes = "UMAP"
-
-    preprocessed_spotify = dim_reductor.preprocess(spotify_numerical)
-    spotify_dim_reducted = dim_reductor.reduce_dimensionality(preprocessed_spotify, 3)
-
-    if CLUSTERING_ALGORITHM == "KMEANS":
-        cluster_algorithm = KMeansAlgorithm(n_clusters=5)
-    if CLUSTERING_ALGORITHM == "DBSCAN":
-        cluster_algorithm = DBSCANAlgorithm()
-    df = cluster_algorithm.compute(spotify_dim_reducted)
-    fig = visualization.make_scatter3d_from_dataframe(
-        df,
-        x_axes=f"{axes}1",
-        y_axes=f"{axes}2",
-        z_axes=f"{axes}3",
-        hoverdata=spotify_df[["artist", "artist_genres"]],
-        color_by="cluster_labels",
-    )
-    fig.show()
