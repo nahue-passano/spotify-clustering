@@ -14,9 +14,6 @@ from spotify_clustering.engine.dimensionality_reduction import (
     UMAPTechnique,
 )
 
-# TODO: agregar ploteo de la matriz de correlación
-# TODO: Agregar gráfico temporal de como cambian los parámetros en función del tiempo
-
 CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
 DIM_REDUCTION_YAML = Path("spotify_clustering/configs/dimensionality_reduction.yaml")
 CLUSTERING_YAML = Path("spotify_clustering/configs/clustering.yaml")
@@ -48,6 +45,8 @@ def intro_tab_code():
     st.header("Introduction")
 
     st.write("Tech stack used for the challenge:")
+    st.write("* Yaml files for configurations")
+    st.write("* Poetry for dependencies managment")
     st.write("* Pandas for data manipulation")
     st.write("* Plotly for data visualization")
     st.write(
