@@ -5,7 +5,8 @@ import pandas as pd
 
 
 def load_csv(csv_path: Path) -> pd.DataFrame:
-    """Reads the csv data and return it as a dataframe
+    """
+    Reads the csv data and return it as a dataframe
 
     Parameters
     ----------
@@ -21,17 +22,18 @@ def load_csv(csv_path: Path) -> pd.DataFrame:
 
 
 def load_yaml(yaml_path: Path) -> dict:
-    """_summary_
+    """
+    Load data from a YAML file into a dictionary.
 
     Parameters
     ----------
     yaml_path : Path
-        _description_
+        The path to the YAML file.
 
     Returns
     -------
     dict
-        _description_
+        A dictionary containing the data from the YAML file.
     """
 
     assert isinstance(

@@ -5,7 +5,8 @@ from plotly.subplots import make_subplots
 
 
 def make_histogram_from_dataframe(dataframe: pd.DataFrame) -> go.Figure:
-    """Generates a plotly figure with the histogram of each numerical feature.
+    """
+    Generates a plotly figure with the histogram of each numerical feature.
 
     Parameters
     ----------
@@ -54,26 +55,30 @@ def make_scatter3d_from_dataframe(
     hoverdata: pd.DataFrame,
     color_by: str = "song_popularity",
 ) -> go.Figure:
-    """_summary_
+    """
+    Generate a 3D scatter plot using Plotly based on data from a DataFrame.
 
     Parameters
     ----------
     dataframe : pd.DataFrame
-        _description_
+        The DataFrame containing the data for the scatter plot.
     x_axes : str
-        _description_
+        The column name in the DataFrame to be used as the x-axis data.
     y_axes : str
-        _description_
+        The column name in the DataFrame to be used as the y-axis data.
     z_axes : str
-        _description_
+        The column name in the DataFrame to be used as the z-axis data.
     hoverdata : pd.DataFrame
-        _description_
+        Additional data to be shown in the hover tooltip.
+    color_by : str, optional
+        The column name in the DataFrame to determine the color of markers, by default "song_popularity".
 
     Returns
     -------
     go.Figure
-        _description_
+        A Plotly Figure object containing the 3D scatter plot.
     """
+
     fig = make_subplots(rows=1, cols=1)
 
     scatter = go.Scatter3d(
