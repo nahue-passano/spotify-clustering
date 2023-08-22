@@ -5,26 +5,24 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 
-from spotify_clustering.engine import utils
+from spotify_clustering.utils import utils
+from spotify_clustering.utils import visualization
 from spotify_clustering.engine import eda
-from spotify_clustering.engine import visualization
+from spotify_clustering.engine.clustering import KMeansAlgorithm, DBSCANAlgorithm
 from spotify_clustering.engine.dimensionality_reduction import (
     PCATechnique,
     UMAPTechnique,
 )
-from spotify_clustering.engine.clustering import KMeansAlgorithm, DBSCANAlgorithm
 
 # TODO: agregar ploteo de la matriz de correlación
 # TODO: Agregar gráfico temporal de como cambian los parámetros en función del tiempo
 
 CSV_PATH = Path("spotify_clustering/data/spotify_dataset.csv")
-DIMENSIONALITY_REDUCTION_YAML = Path(
-    "spotify_clustering/configs/dimensionality_reduction.yaml"
-)
+DIM_REDUCTION_YAML = Path("spotify_clustering/configs/dimensionality_reduction.yaml")
 CLUSTERING_YAML = Path("spotify_clustering/configs/clustering.yaml")
 
 spotify_df = utils.load_csv(CSV_PATH)
-dimensionality_reduction_settings = utils.load_yaml(DIMENSIONALITY_REDUCTION_YAML)
+dim_reduction_settings = utils.load_yaml(DIM_REDUCTION_YAML)
 clustering_settings = utils.load_yaml(CLUSTERING_YAML)
 
 
@@ -141,7 +139,7 @@ def clustering_tab_code():
                     "n_neighbors",
                     3,
                     200,
-                    dimensionality_reduction_settings["umap"]["n_neighbors"],
+                    dim_reduction_settings["umap"]["n_neighbors"],
                 )
             )
             min_dist = float(
@@ -149,12 +147,10 @@ def clustering_tab_code():
                     "min_dist",
                     0.0,
                     1.0,
-                    dimensionality_reduction_settings["umap"]["min_dist"],
+                    dim_reduction_settings["umap"]["min_dist"],
                 )
             )
-            random_state = int(
-                dimensionality_reduction_settings["umap"]["random_state"]
-            )
+            random_state = int(dim_reduction_settings["umap"]["random_state"])
 
             dim_reductor = UMAPTechnique(n_neighbors, min_dist, random_state)
             axes = "UMAP"
@@ -206,9 +202,9 @@ def clustering_tab_code():
     spotify_numerical = spotify_df.select_dtypes(include=np.number)
 
     preprocessed_spotify = dim_reductor.preprocess(spotify_numerical, scaler=scaler)
-    spotify_dim_reducted = dim_reductor.reduce_dimensionality(preprocessed_spotify, 3)
+    spotify_dim_reduced = dim_reductor.reduce_dimensionality(preprocessed_spotify, 3)
 
-    df = cluster_algorithm.compute(spotify_dim_reducted)
+    df = cluster_algorithm.compute(spotify_dim_reduced)
     scatter3d_fig = visualization.make_scatter3d_from_dataframe(
         pd.concat([preprocessed_spotify, df], axis=1),
         x_axes=f"{axes}1",

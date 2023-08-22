@@ -5,5 +5,5 @@ kmeans:
   random_state : 42
 
 dbscan:
-  eps : 0.5
+  eps : 0.68
   min_samples : 5
